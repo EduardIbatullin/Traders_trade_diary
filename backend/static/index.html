@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traders_Trade_Diary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 20px;
+        }
+        .trade-form {
+            margin-bottom: 40px;
+        }
+        .position-card {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Traders_Trade_Diary</h1>
+        
+        <!-- Форма добавления сделки -->
+        <div class="card trade-form">
+            <div class="card-header">
+                <h5>Добавить новую сделку</h5>
+            </div>
+            <div class="card-body">
+                <form id="tradeForm">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="instrument" class="form-label">Инструмент</label>
+                            <input type="text" class="form-control" id="instrument" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="operation" class="form-label">Операция</label>
+                            <select class="form-select" id="operation" required>
+                                <option value="buy">Покупка</option>
+                                <option value="sell">Продажа</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="quantity" class="form-label">Количество</label>
+                            <input type="number" class="form-control" id="quantity" min="1" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="price" class="form-label">Цена</label>
+                            <input type="number" step="0.01" class="form-control" id="price" min="0" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="commission" class="form-label">Комиссия</label>
+                            <input type="number" step="0.01" class="form-control" id="commission" min="0">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tradeDate" class="form-label">Дата сделки</label>
+                            <input type="datetime-local" class="form-control" id="tradeDate" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="note" class="form-label">Заметка</label>
+                            <input type="text" class="form-control" id="note">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Добавить сделку</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Список позиций -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Текущие позиции</h5>
+            </div>
+            <div class="card-body">
+                <div id="positionsList">
+                    <p class="text-muted">Загрузка позиций...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Установка текущей даты и времени по умолчанию
+        document.getElementById('tradeDate').valueAsDate = new Date();
+        
+        // Обработка формы добавления сделки
+        document.getElementById('tradeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                instrument: document.getElementById('instrument').value,
+                operation: document.getElementById('operation').value,
+                quantity: parseFloat(document.getElementById('quantity').value),
+                price: parseFloat(document.getElementById('price').value),
+                commission: parseFloat(document.getElementById('commission').value) || 0,
+                trade_date: document.getElementById('tradeDate').value + ':00',
+                note: document.getElementById('note').value
+            };
+
+            try {
+                const response = await fetch('/api/v1/trades/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Сделка успешно добавлена!');
+                    document.getElementById('tradeForm').reset();
+                    document.getElementById('tradeDate').valueAsDate = new Date();
+                    loadPositions(); // Обновляем список позиций
+                } else {
+                    const errorData = await response.json();
+                    alert('Ошибка при добавлении сделки: ' + JSON.stringify(errorData));
+                }
+            } catch (error) {
+                alert('Ошибка при отправке запроса: ' + error.message);
+            }
+        });
+
+        // Функция загрузки позиций
+        async function loadPositions() {
+            try {
+                const response = await fetch('/api/v1/positions/');
+                if (response.ok) {
+                    const positions = await response.json();
+                    const positionsList = document.getElementById('positionsList');
+                    
+                    if (positions.length > 0) {
+                        positionsList.innerHTML = '';
+                        positions.forEach(position => {
+                            const positionCard = document.createElement('div');
+                            positionCard.className = 'card position-card';
+                            positionCard.innerHTML = `
+                                <div class="card-body">
+                                    <h6 class="card-title">${position.instrument}</h6>
+                                    <p class="card-text">
+                                        Средняя цена: ${position.avg_price ? position.avg_price.toFixed(2) : 'N/A'}<br>
+                                        Количество: ${position.quantity_total || 0}<br>
+                                        Доходность: ${position.total_profit_loss_percent ? position.total_profit_loss_percent.toFixed(2) + '%' : 'N/A'}
+                                    </p>
+                                </div>
+                            `;
+                            positionsList.appendChild(positionCard);
+                        });
+                    } else {
+                        positionsList.innerHTML = '<p class="text-muted">Нет активных позиций</p>';
+                    }
+                } else {
+                    document.getElementById('positionsList').innerHTML = '<p class="text-danger">Ошибка при загрузке позиций</p>';
+                }
+            } catch (error) {
+                document.getElementById('positionsList').innerHTML = '<p class="text-danger">Ошибка при загрузке позиций: ' + error.message + '</p>';
+            }
+        }
+
+        // Загружаем позиции при загрузке страницы
+        window.onload = function() {
+            loadPositions();
+        };
+    </script>
+</body>
+</html>

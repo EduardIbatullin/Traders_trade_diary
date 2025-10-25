@@ -1,6 +1,12 @@
 from logging.config import fileConfig
 import sys
 import os
+from dotenv import load_dotenv
+
+# Загружаем переменные окружения
+load_dotenv()
+
+# Добавляем путь к backend для импорта
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import engine_from_config
@@ -18,6 +24,9 @@ config = context.config
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+# Установка строки подключения из переменной окружения
+config.set_main_option('sqlalchemy.url', os.getenv("DATABASE_URL", ""))
 
 # add your model's MetaData object here
 # for 'autogenerate' support

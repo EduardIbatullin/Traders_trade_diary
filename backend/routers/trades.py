@@ -5,8 +5,9 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from .. import crud, models, schemas
+from .. import crud, models
 from ..database import get_db
+from ..schemas import trade_schemas as schemas
 
 router = APIRouter(prefix="/trades", tags=["trades"])
 

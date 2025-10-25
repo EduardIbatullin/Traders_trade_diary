@@ -56,6 +56,9 @@ def update_position(db: Session, position_id: int, position: schemas.PositionUpd
         db.refresh(db_position)
     return db_position
 
+def get_position_by_id(db: Session, position_id: int):
+    return db.query(models.Position).filter(models.Position.id == position_id).first()
+
 def get_note(db: Session, note_id: int):
     return db.query(models.Note).filter(models.Note.id == note_id).first()
 
@@ -65,3 +68,11 @@ def create_note(db: Session, note: schemas.NoteCreate):
     db.commit()
     db.refresh(db_note)
     return db_note
+
+def delete_position(db: Session, position_id: int):
+    db_position = db.query(models.Position).filter(models.Position.id == position_id).first()
+    if db_position:
+        db.delete(db_position)
+        db.commit()
+        return True
+    return False
