@@ -15,67 +15,148 @@
         .position-card {
             margin-bottom: 15px;
         }
+        .trade-card {
+            margin-bottom: 10px;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+        .file-upload {
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-center mb-4">Traders_Trade_Diary</h1>
         
-        <!-- Форма добавления сделки -->
-        <div class="card trade-form">
-            <div class="card-header">
-                <h5>Добавить новую сделку</h5>
-            </div>
-            <div class="card-body">
-                <form id="tradeForm">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label for="instrument" class="form-label">Инструмент</label>
-                            <input type="text" class="form-control" id="instrument" required>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="operation" class="form-label">Операция</label>
-                            <select class="form-select" id="operation" required>
-                                <option value="buy">Покупка</option>
-                                <option value="sell">Продажа</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="quantity" class="form-label">Количество</label>
-                            <input type="number" class="form-control" id="quantity" min="1" required>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="price" class="form-label">Цена</label>
-                            <input type="number" step="0.01" class="form-control" id="price" min="0" required>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="commission" class="form-label">Комиссия</label>
-                            <input type="number" step="0.01" class="form-control" id="commission" min="0">
-                        </div>
+        <!-- Навигационные вкладки -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="trade-tab" data-bs-toggle="tab" data-bs-target="#trade" type="button" role="tab">Сделки</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="positions-tab" data-bs-toggle="tab" data-bs-target="#positions" type="button" role="tab">Позиции</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="import-tab" data-bs-toggle="tab" data-bs-target="#import" type="button" role="tab">Импорт</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="myTabContent">
+            <!-- Вкладка "Сделки" -->
+            <div class="tab-pane fade show active" id="trade" role="tabpanel">
+                <!-- Форма добавления сделки -->
+                <div class="card trade-form">
+                    <div class="card-header">
+                        <h5>Добавить новую сделку</h5>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="tradeDate" class="form-label">Дата сделки</label>
-                            <input type="datetime-local" class="form-control" id="tradeDate" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="note" class="form-label">Заметка</label>
-                            <input type="text" class="form-control" id="note">
-                        </div>
+                    <div class="card-body">
+                        <form id="tradeForm">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="instrument" class="form-label">Инструмент</label>
+                                    <input type="text" class="form-control" id="instrument" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="operation" class="form-label">Операция</label>
+                                    <select class="form-select" id="operation" required>
+                                        <option value="buy">Покупка</option>
+                                        <option value="sell">Продажа</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label for="quantity" class="form-label">Количество</label>
+                                    <input type="number" class="form-control" id="quantity" min="1" required>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label for="price" class="form-label">Цена</label>
+                                    <input type="number" step="0.01" class="form-control" id="price" min="0" required>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label for="commission" class="form-label">Комиссия</label>
+                                    <input type="number" step="0.01" class="form-control" id="commission" min="0">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tradeDate" class="form-label">Дата сделки</label>
+                                    <input type="datetime-local" class="form-control" id="tradeDate" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="note" class="form-label">Заметка</label>
+                                    <input type="text" class="form-control" id="note">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Добавить сделку</button>
+                        </form>
                     </div>
-                    <button type="submit" class="btn btn-primary">Добавить сделку</button>
-                </form>
-            </div>
-        </div>
+                </div>
 
-        <!-- Список позиций -->
-        <div class="card">
-            <div class="card-header">
-                <h5>Текущие позиции</h5>
+                <!-- Список сделок -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Список сделок</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" id="filterInstrument" placeholder="Фильтр по инструменту">
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="filterOperation">
+                                    <option value="">Все операции</option>
+                                    <option value="buy">Покупка</option>
+                                    <option value="sell">Продажа</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" id="filterDateFrom" placeholder="От">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" id="filterDateTo" placeholder="До">
+                            </div>
+                        </div>
+                        <div id="tradesList">
+                            <p class="text-muted">Загрузка сделок...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div id="positionsList">
-                    <p class="text-muted">Загрузка позиций...</p>
+            
+            <!-- Вкладка "Позиции" -->
+            <div class="tab-pane fade" id="positions" role="tabpanel">
+                <!-- Список позиций -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Текущие позиции</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="positionsList">
+                            <p class="text-muted">Загрузка позиций...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вкладка "Импорт" -->
+            <div class="tab-pane fade" id="import" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Импорт отчета Сбербанка</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="file-upload">
+                            <label for="reportFile" class="form-label">Выберите HTML-файл отчета:</label>
+                            <input type="file" class="form-control" id="reportFile" accept=".html,.htm">
+                        </div>
+                        <button id="previewBtn" class="btn btn-secondary">Предварительный просмотр</button>
+                        <button id="importBtn" class="btn btn-success">Импортировать</button>
+                        <div id="importPreview" class="mt-3" style="display: none;">
+                            <h6>Предварительный просмотр:</h6>
+                            <div id="previewContent"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,6 +195,7 @@
                     document.getElementById('tradeForm').reset();
                     document.getElementById('tradeDate').valueAsDate = new Date();
                     loadPositions(); // Обновляем список позиций
+                    loadTrades(); // Обновляем список сделок
                 } else {
                     const errorData = await response.json();
                     alert('Ошибка при добавлении сделки: ' + JSON.stringify(errorData));
@@ -142,7 +224,8 @@
                                     <p class="card-text">
                                         Средняя цена: ${position.avg_price ? position.avg_price.toFixed(2) : 'N/A'}<br>
                                         Количество: ${position.quantity_total || 0}<br>
-                                        Доходность: ${position.total_profit_loss_percent ? position.total_profit_loss_percent.toFixed(2) + '%' : 'N/A'}
+                                        Доходность: ${position.total_profit_loss_percent ? position.total_profit_loss_percent.toFixed(2) + '%' : 'N/A'}<br>
+                                        Комиссия: ${position.total_commission || 0}
                                     </p>
                                 </div>
                             `;
@@ -159,9 +242,142 @@
             }
         }
 
-        // Загружаем позиции при загрузке страницы
+        // Функция загрузки сделок
+        async function loadTrades() {
+            try {
+                const response = await fetch('/api/v1/trades/');
+                if (response.ok) {
+                    const trades = await response.json();
+                    const tradesList = document.getElementById('tradesList');
+                    
+                    if (trades.length > 0) {
+                        tradesList.innerHTML = '';
+                        trades.forEach(trade => {
+                            const tradeCard = document.createElement('div');
+                            tradeCard.className = 'card trade-card';
+                            tradeCard.innerHTML = `
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-2"><strong>${trade.instrument}</strong></div>
+                                        <div class="col-md-2">${trade.operation === 'buy' ? 'Покупка' : 'Продажа'}</div>
+                                        <div class="col-md-2">Кол-во: ${trade.quantity}</div>
+                                        <div class="col-md-2">Цена: ${trade.price}</div>
+                                        <div class="col-md-2">Дата: ${new Date(trade.trade_date).toLocaleString()}</div>
+                                        <div class="col-md-2">Комиссия: ${trade.commission || 0}</div>
+                                    </div>
+                                    ${trade.note ? `<div class="mt-1"><small class="text-muted">Заметка: ${trade.note}</small></div>` : ''}
+                                </div>
+                            `;
+                            tradesList.appendChild(tradeCard);
+                        });
+                    } else {
+                        tradesList.innerHTML = '<p class="text-muted">Нет сделок</p>';
+                    }
+                } else {
+                    document.getElementById('tradesList').innerHTML = '<p class="text-danger">Ошибка при загрузке сделок</p>';
+                }
+            } catch (error) {
+                document.getElementById('tradesList').innerHTML = '<p class="text-danger">Ошибка при загрузке сделок: ' + error.message + '</p>';
+            }
+        }
+
+        // Функция предварительного просмотра импорта
+        async function previewImport() {
+            const fileInput = document.getElementById('reportFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Пожалуйста, выберите файл отчета');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/api/v1/import/preview', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const previewContent = document.getElementById('previewContent');
+                    
+                    previewContent.innerHTML = `
+                        <p><strong>Найдено сделок:</strong> ${data.trades_count}</p>
+                        <p><strong>Найдено валютных операций:</strong> ${data.currency_operations_count}</p>
+                        <p><strong>Примеры первых сделок:</strong></p>
+                        <ul>
+                            ${data.preview_data.map(trade => 
+                                `<li>${trade.instrument} - ${trade.operation} - ${trade.quantity} шт. - ${trade.price} руб.</li>`
+                            ).join('')}
+                        </ul>
+                    `;
+                    
+                    document.getElementById('importPreview').style.display = 'block';
+                } else {
+                    const errorData = await response.json();
+                    alert('Ошибка при предварительном просмотре: ' + JSON.stringify(errorData));
+                }
+            } catch (error) {
+                alert('Ошибка при предварительном просмотре: ' + error.message);
+            }
+        }
+
+        // Функция импорта
+        async function importReport() {
+            const fileInput = document.getElementById('reportFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Пожалуйста, выберите файл отчета');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/api/v1/import/trades', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(data.message);
+                    loadTrades(); // Обновляем список сделок
+                    loadPositions(); // Обновляем список позиций
+                } else {
+                    const errorData = await response.json();
+                    alert('Ошибка при импорте: ' + JSON.stringify(errorData));
+                }
+            } catch (error) {
+                alert('Ошибка при импорте: ' + error.message);
+            }
+        }
+
+        // Назначение обработчиков событий
+        document.getElementById('previewBtn').addEventListener('click', previewImport);
+        document.getElementById('importBtn').addEventListener('click', importReport);
+
+        // Фильтрация сделок
+        function applyTradeFilters() {
+            // В реальном приложении здесь будет фильтрация на клиенте или новый запрос к серверу
+            loadTrades();
+        }
+
+        // Добавляем обработчики для фильтров
+        document.getElementById('filterInstrument').addEventListener('input', applyTradeFilters);
+        document.getElementById('filterOperation').addEventListener('change', applyTradeFilters);
+        document.getElementById('filterDateFrom').addEventListener('change', applyTradeFilters);
+        document.getElementById('filterDateTo').addEventListener('change', applyTradeFilters);
+
+        // Загружаем данные при загрузке страницы
         window.onload = function() {
             loadPositions();
+            loadTrades();
         };
     </script>
 </body>
